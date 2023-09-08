@@ -7,7 +7,7 @@
 	let results = {};
   	let timeouts = {};
   	let customUrl = 'http://api.sensevine.com/1234567/public-test/list';
-  	let customUrl2 = 'http://api.sensevine.com/1234567/public-test/chat.py/run?params=你好啊,可以为我写一首深圳这座城市的夜景的诗吗？我刚在飞机上飞过了深圳夜晚的上空，太每妙、太震撼了';
+  	let customUrl2 = 'http://api.sensevine.com/1234567/public-test/chat.py/run?params=你好啊,可以为我写一首深圳这座城市的夜景的诗吗？我刚在飞机上飞过了深圳夜晚的上空，太美妙、太震撼了';
 	let customUrl3 = 'http://api.sensevine.com/1234567/public-test';
 	let currentResult = '待命...';  // 新添加的变量
 

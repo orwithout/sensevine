@@ -2,7 +2,7 @@ import sys
 import openai
 
 # 初始化 OpenAI GPT-3.5 Turbo 模型
-openai.api_key = "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"
+openai.api_key = "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"
 
 # 从命令行参数获取聊天信息
 chat_input = " ".join(sys.argv[1:])

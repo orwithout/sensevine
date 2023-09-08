@@ -11,7 +11,7 @@ DEMO v0.0.1: http://sensevine.com
 1. 可以执行上传的python文件。例如将abc.py 上传到http://api.sensevine.com/public-test ,然后访问：http://api.sensevine.com/public-test/abc.py/run?params=var1 ,即可执行
 2. 可以修改文件 fastapi/config.json ,例如 "svd-password": "1234567" 重启服务,api路径将变为:  http://api.sensevine.com/1234567/…… ,如果不知道密码则无法访问api
 3. 你还可以搭建自己的api服务器，那样将可以从你的api获取文件、以及保存文件到你自己的服务器
-4. 预期将加入文件打标、标签推荐、文件共享、智能索引、跨api聚类、对接聊天机器人
+4. 预期将加入文件打标、标签推荐、文件共享、智能索引、跨api聚类、对接聊天机器人、cgroups控制、GnuPG文件加密
    
 ## 二、开发环境设定（针对 Windows 用户）
 
