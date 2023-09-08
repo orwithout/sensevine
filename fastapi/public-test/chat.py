@@ -1,10 +1,8 @@
 import sys
 import openai
-import os
-
 
 # 初始化 OpenAI GPT-3.5 Turbo 模型  在系统中执行：export OPENAI_API_KEY=sk-xxxx…… 以设置 API 密钥
-openai.api_key = "sk-xxxx"
+openai.api_key = "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"
 
 # 从命令行参数获取聊天信息
 chat_input = " ".join(sys.argv[1:])
