@@ -1,3 +1,6 @@
+# uvicorn svd:app --reload --host 0.0.0.0 --port 8002
+# http://4.193.54.245:8002/123456/public-test/list
+
 from fastapi import FastAPI, HTTPException, Path, File, UploadFile
 from typing import Optional
 import os
@@ -5,6 +8,13 @@ from pathlib import Path as PythonPath
 import shutil
 from subprocess import Popen, PIPE
 from fastapi.middleware.cors import CORSMiddleware
+import json
+
+with open("config.json", "r") as f:
+    config = json.load(f)
+
+svd_password = config.get("svd-password", "")
+svd_password = f"/{svd_password}" if svd_password else ""
 
 app = FastAPI()
 
@@ -25,11 +35,14 @@ def secure_path(path: str, base_directory: str) -> PythonPath:
     return full_path
 
 
-@app.get("/{path:path}/{action}")
+
+
+@app.get(f"{svd_password}/{{path:path}}/{{action}}")
 async def file_operations(action: str, path: str, params: Optional[str] = None):
     base_directory = os.getcwd()
     target_path = secure_path(path, base_directory)
-
+    
+    print("svd_password:", svd_password)
     # Read File
     if action == "read":
         if os.path.exists(target_path) and os.path.isfile(target_path):
@@ -45,6 +58,25 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
             return {"content": os.listdir(target_path)}
         else:
             raise HTTPException(status_code=404, detail="Directory not found")
+
+
+    # Update File
+    elif action == "update":
+        if os.path.exists(target_path) and os.path.isfile(target_path):
+            with open(target_path, 'a') as f:  # 'a' mode for appending
+                f.write("\n" + params)
+            return {"status": "File updated"}
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+
+
+    # Create File/Directory
+    elif action == "mkdir":
+        if not os.path.exists(target_path):
+                os.makedirs(target_path)
+                return {"status": "Directory created"}
+
+
 
     # Delete File/Directory
     elif action == "delete":
@@ -75,8 +107,7 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
         raise HTTPException(status_code=400, detail="Invalid action")
     
 
-
-@app.post("/{path:path}/{action}")  # 使用 POST 方法
+@app.post(f"{svd_password}/{{path:path}}/{{action}}")  # 使用 POST 方法
 async def file_operations(action: str, path: str, params: Optional[str] = None, file: UploadFile = File(...)):
     base_directory = os.getcwd()
     target_path = secure_path(path, base_directory)
@@ -95,4 +126,8 @@ async def file_operations(action: str, path: str, params: Optional[str] = None, 
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
     
+
+
+
+
 

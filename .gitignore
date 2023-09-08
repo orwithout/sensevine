@@ -1,0 +1,5 @@
+svelte/node_modules/
+svelte/public/build/
+.vscode/
+.DS_Store
+
