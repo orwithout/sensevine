@@ -3,7 +3,6 @@
 	  'http://api.sensevine.com/1234567/public-test/hello.py/read',
 	  'http://api.sensevine.com/1234567/public-test/hello.py/run?params=嗨0o0'
 	];
-  
 	let results = {};
   	let timeouts = {};
   	let customUrl = 'http://api.sensevine.com/1234567/public-test/list';
@@ -82,7 +81,6 @@ async function fetchApi(url, file) {
 </style>
 
 
-
 <main>
 	<div class="container">
 		<!-- 操作区 -->
@@ -122,3 +120,10 @@ async function fetchApi(url, file) {
 		</div>
 	</div>
 </main>
+
+<div style="display: flex; align-items: center;">
+	<img id="imageToHide" src='image.gif' alt="senseVine.com dancing" />
+	<button on:click={(e) => e.target.previousElementSibling.style.display = 'none'}>关闭</button>
+  </div>
+  
+  
