@@ -1,6 +1,6 @@
-# Sensevine 项目设置说明文档
+# senseVine 项目设置说明文档
 
-此文档将指导您如何在 Windows 和 Linux 系统上设置并运行 Sensevine 项目。
+此文档将指导您如何在 Windows 和 Linux 系统上设置并运行 senseVine 项目。
 
 
 
@@ -9,9 +9,10 @@
 
 ### 步骤 1：克隆项目
 
-打开命令提示符（Cmd）并运行以下命令以克隆项目：
+打开电脑系统的命令提示符（Cmd）并运行以下命令以克隆项目：
 
-```bash
+```bat
+rem 需要先安装git: https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git
 git clone https://www.github.com/orwithout/sensevine.git
 ```
 
@@ -21,7 +22,7 @@ git clone https://www.github.com/orwithout/sensevine.git
 2. 选择适合您的 Windows 版本的 Python 3 安装程序
 3. 下载并运行安装程序，记得在安装过程中选择“Add Python 3.x to PATH”
    
-4. 导航到 `sensevine/fastapi` 目录：
+4. 导航到克隆下来的 `sensevine/fastapi` 目录：
     ```bash
     cd sensevine/fastapi
     ```
@@ -31,7 +32,7 @@ git clone https://www.github.com/orwithout/sensevine.git
     ```
 6. 运行后端：
     ```bash
-    uvicorn main:app --reload
+    uvicorn sensevine:app --reload --host 0.0.0.0 --port 8002
     ```
 
 ### 步骤 3：安装前端依赖并运行前端
@@ -39,7 +40,7 @@ git clone https://www.github.com/orwithout/sensevine.git
 2. 选择适合您的 Windows 版本
 3. 下载并运行安装程序
    
-4. 导航到 `sensevine/svelte` 目录：
+4. 导航到克隆下来的 `sensevine/svelte` 目录：
     ```bash
     cd sensevine/svelte
     ```
@@ -61,6 +62,7 @@ git clone https://www.github.com/orwithout/sensevine.git
 打开终端并运行以下命令以克隆项目：
 
 ```bash
+# 需要先安装git: https://git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git
 git clone https://www.github.com/orwithout/sensevine.git
 ```
 
@@ -79,7 +81,7 @@ git clone https://www.github.com/orwithout/sensevine.git
     sudo yum install python3
     ```
 
-3. 导航到 `sensevine/fastapi` 目录：
+3. 导航到克隆下来的 `sensevine/fastapi` 目录：
     ```bash
     cd sensevine/fastapi
     ```
@@ -89,7 +91,7 @@ git clone https://www.github.com/orwithout/sensevine.git
     ```
 5. 运行后端：
     ```bash
-    uvicorn main:app --reload
+    uvicorn sensevine:app --reload --host 0.0.0.0 --port 8002
     ```
 
 ### 步骤 3：安装前端依赖并运行前端
@@ -106,7 +108,7 @@ git clone https://www.github.com/orwithout/sensevine.git
     nvm install node
     ```
 
-5. 导航到 `sensevine/svelte` 目录：
+5. 导航到克隆下来的 `sensevine/svelte` 目录：
     ```bash
     cd sensevine/svelte
     ```
