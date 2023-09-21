@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Helia Example</title>
+  <!-- 引入 helia 库 -->
+  <script src="https://unpkg.com/helia/dist/index.min.js"></script>
+  <!-- 引入 @helia/strings 库 -->
+  <script src="https://unpkg.com/@helia/strings/dist/index.min.js"></script>
+</head>
+<body>
+
+<script>
+  // 使用异步函数包装你的代码
+  async function runHeliaExample() {
+    // 使用全局的 Helia.createHelia 来创建 helia 实例
+    const helia = await Helia.createHelia();
+    // 使用全局的 HeliaStrings.strings 函数，并传递 helia 实例
+    const s = HeliaStrings.strings(helia);
+
+    const myImmutableAddress = await s.add('hello world');
+    console.log(await s.get(myImmutableAddress));  // 应该输出 "hello world"
+  }
+
+  // 执行异步函数
+  runHeliaExample().catch(error => {
+    console.error("An error occurred:", error);
+  });
+</script>
+
+</body>
+</html>

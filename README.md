@@ -11,7 +11,7 @@ senseVine.com 使用python、结合AI来处理文件（分类、查询、总结�
 3. 可以修改文件 fastapi/config.json ,例如 "svd-password": "1234567" 重启服务,api路径将变为:  http://api.sensevine.com/1234567/…… ,如果不知道密码则无法访问api
 4. 预期将加入文件打标、标签推荐、文件共享、智能索引、跨api聚类、对接聊天机器人、cgroups控制、GnuPG文件加密、百度网盘同步备份
 
-DEMO v0.0.1: http://sensevine.com
+5. **DEMO** v0.0.1: http://sensevine.com
 
 
 ## 二、开发环境设定（针对 Windows 用户）
@@ -41,7 +41,7 @@ git clone https://www.github.com/orwithout/sensevine.git
     ```
 6. 运行后端：
     ```bash
-    uvicorn sensevine:app --reload --host 0.0.0.0 --port 8002
+    uvicorn svd:app --reload --host 0.0.0.0 --port 8002
     ```
 
 ### 步骤 3：安装前端依赖并运行前端
@@ -75,7 +75,7 @@ git clone https://www.github.com/orwithout/sensevine.git
 git clone https://www.github.com/orwithout/sensevine.git
 ```
 
-### 步骤 2：安装后端依赖并运行后端
+### 步骤 2：安装后端依赖并运行后端主程序svd.py
 
 1. 打开终端
 2. 运行以下命令以使用包管理器安装 Python 3：
@@ -100,8 +100,9 @@ git clone https://www.github.com/orwithout/sensevine.git
     ```
 5. 运行后端：
     ```bash
-    uvicorn sensevine:app --reload --host 0.0.0.0 --port 8002
+    uvicorn svd:app --reload --host 0.0.0.0 --port 8002
     ```
+- **[fastapi入门参考](https://fastapi.tiangolo.com/zh/#:~:text=%E8%B4%9F%E8%B4%A3%E6%95%B0%E6%8D%AE%E9%83%A8%E5%88%86%E3%80%82-,%E5%AE%89%E8%A3%85,-%C2%B6)**
 
 ### 步骤 3：安装前端依赖并运行前端
 1. 打开终端
@@ -114,6 +115,7 @@ git clone https://www.github.com/orwithout/sensevine.git
 3. 安装完成后，重启终端或命令提示符
 4. 运行以下命令以安装 Node.js：
     ```bash
+    source ~/.bashrc  #刷新环境
     nvm install node
     ```
 
@@ -129,6 +131,28 @@ git clone https://www.github.com/orwithout/sensevine.git
     ```bash
     npm run dev
     ```
+- **前端可以静态部署**
+如果是生产环境，可以在sensevine/svelte 中执行：
+    ```bash
+    npm run build
+    ```
+
+  然后将sensevine/svelte/public 目录做静态部署
+
+- **如何初始化一个新的svelte项目？**
+    ```bash
+    npx degit sveltejs/template your-project-name
+    #如果使用typescript模板：npx degit sveltejs/template#typescript 
+    cd your-project-name
+    npm install  #安装依赖
+    npm run dev  #运行服务，会实时编译，方便开发调试
+    #如果要构建生成版本，以静态部署：npm run build
+    #编译后将your-project-name/src/public进行静态部署即可，具体可查看或修改rollup.config.js
+    ```
+
+    初始化新项目后，可以通过修改your-project-name/src/main.js 和your-project-name/src/App.svelte文件来开始创建你自己的页面。  
+src/main.js：这是应用程序的入口点。通常，你只需在这里初始化并挂载主Svelte组件。但你也可以在这里进行一些全局设置，如路由、状态管理等。  
+src/App.svelte：这通常是主要的Svelte组件，它会被挂载到public/index.html中的某个元素上。  
 
 ---
 
@@ -182,6 +206,7 @@ sudo systemctl start nginx
 ```bash
 sudo systemctl stop nginx
 ```
+
 
 ## 配置虚拟主机
 

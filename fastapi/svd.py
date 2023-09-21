@@ -9,6 +9,8 @@ import shutil
 from subprocess import Popen, PIPE
 from fastapi.middleware.cors import CORSMiddleware
 import json
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 
 with open("config.json", "r") as f:
     config = json.load(f)
@@ -33,6 +35,18 @@ def secure_path(path: str, base_directory: str) -> PythonPath:
     if base not in full_path.parents:
         raise HTTPException(status_code=403, detail="Operation not permitted")
     return full_path
+
+
+
+
+
+@app.get("/static/{file_path:path}")
+async def read_static(file_path: str):
+    complete_path = os.path.join("public-test", file_path)
+    if os.path.exists(complete_path) and os.path.isfile(complete_path):
+        return FileResponse(complete_path)
+    else:
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 
@@ -126,8 +140,4 @@ async def file_operations(action: str, path: str, params: Optional[str] = None, 
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
     
-
-
-
-
 

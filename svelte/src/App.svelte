@@ -28,6 +28,7 @@ async function fetchApi(url, file) {
             method: file ? 'POST' : 'GET',  // 使用 POST 方法如果有文件需要上传
             body: file ? formData : null
         });
+
         clearTimeout(timeouts[url]);  // Clear the timeout if response received
 
         if (!response.ok) {
@@ -46,16 +47,16 @@ async function fetchApi(url, file) {
 }
 
 
-	function uploadFile() {
-		const fileInput = document.getElementById("fileInput");
-		const file = fileInput.files[0];
-		let finalUrl = customUrl3 + "/upload";  // 拼接 "/upload"
-		if (file) {
-			fetchApi(finalUrl, file);
-		} else {
-			results['upload'] = 'No file selected';
-		}
+function uploadFile() {
+	const fileInput = document.getElementById("fileInput");
+	const file = fileInput.files[0];
+	let finalUrl = customUrl3 + "/upload";  // 拼接 "/upload"
+	if (file) {
+		fetchApi(finalUrl, file);
+	} else {
+		results['upload'] = 'No file selected';
 	}
+}
 
 </script>
 
@@ -67,14 +68,18 @@ async function fetchApi(url, file) {
 		flex-direction: column;  /* 竖向排列 */
 		gap: 10px;  /* 按钮之间的间距 */
 		width: 550px;  /* 你可以修改这个值 */
+		align-items: flex-start;  /* 内容靠左对齐 */
 	}
+
 	.input-container {
 		margin-top: 20px;
 	}
+
 	textarea {
 		width: 550px;
 		height: 100px;
 	}
+
 	input {
 		width: 550px;  /* 你可以修改这个值 */
 	}
@@ -85,29 +90,24 @@ async function fetchApi(url, file) {
 	<div class="container">
 		<!-- 操作区 -->
 		<div class="operation-column">
-
 			<div class="button-list">  <!-- 新添加的 div 用于竖向排列按钮 -->
 				{#each links as link}
 				<button on:click={() => fetchApi(link)}>{link}</button>
 				{/each}
 			</div>
-
 			<div class="upload-container">
 				<input type="file" id="fileInput" />
 				<input type="text" id="urlInput" bind:value={customUrl3}  placeholder="Enter custom URL for upload" />
 				<button on:click={uploadFile}>上传</button>
 			</div>
-			
 			<div class="input-container">
 				<input bind:value={customUrl} placeholder="Enter custom URL" />
 				<button on:click={() => fetchApi(customUrl)}>访问</button>
 			</div>
-			
 			<div class="input-container">
 				<textarea bind:value={customUrl2} placeholder="Enter custom URL"></textarea>
 				<button on:click={() => fetchApi(customUrl2)}>询问</button>
 			</div>
-
 		</div>
 
 		<!-- 结果输出区 -->
@@ -116,7 +116,6 @@ async function fetchApi(url, file) {
 				{currentResult}  <!-- 使用新的 currentResult 变量 -->
 				<button on:click={() => currentResult = '待命...'}>刷新</button>
 			</div>
-			
 		</div>
 	</div>
 </main>
@@ -124,6 +123,6 @@ async function fetchApi(url, file) {
 <div style="display: flex; align-items: center;">
 	<img id="imageToHide" src='image.gif' alt="senseVine.com dancing" />
 	<button on:click={(e) => e.target.previousElementSibling.style.display = 'none'}>关闭</button>
-  </div>
+</div>
   
   
