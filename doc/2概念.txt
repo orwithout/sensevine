@@ -1,13 +1,13 @@
 〇、说明
      1、SenseURL（智慧url）概念：
-     得益于云服务发展，人人可以轻易搭建个一个网址(指向一个网站)。例如 https://example.com/helen
-     扩充网址(所指的网站)的功能，比如加入人工智能、爬虫，让它能自动爬取和整理数据……直到能代替自己自动处理互联网上的事务，成为自己的一个互联网事务代理人。
-     人人都使用自己的网址(所指的网站)来互加好友、互相聊天。那这就是一个完美的去中心化聊天软件。
+     得益于云服务发展，人人可以轻易搭建个一个主页（得到一个网址），例如 https://example.com/helen
+     扩充主页的功能，比如加入人工智能、爬虫，让它能自动爬取和整理数据……直到能代替自己自动处理互联网上的事务，成为自己的一个互联网事务代理人。
+     人人都使用自己的主页来互加好友、互相聊天。那这就是一个完美的去中心化聊天软件。
      理论上，手机也是可以启动网址的
-     这样的网址，可以称为senseurl（智慧url）
+     这样的主页的网址，可以称为senseurl（智慧url）
      url本身具有全球唯一性，因此可以直接使用url来作为个人的网络id，例如：example.com/helen（类似电子邮箱 helen@example.com）
 
-     2、SNI代理：
+     2、SNI代理、https代理
      
 
      2、评论文档概念：
@@ -63,68 +63,73 @@
      这样可以使用一个函数，将json记录树渲染为web页面，呈现为一篇文档、或讨论帖。
      因为Committer使用了senseurl，因此可以方便的将评论者的个人信息、个人网址、个人数据、个人ai模型、个人文档、个人标签、个人评论、个人收藏等等，与评论者的senseurl关联起来，形成一个个人的网络形象。
 
-     网址网络：
-     在自己的网址中存储数据、共享文档、以及提供用自己的个性化数据微调的ai模型。
-     在自己的网址中读取或下载（fork）别人的文档
-     在自己的网址中对文档追加评论，然后使用自己的网址签名；乃至关注别人的网址……
+     主页网络：
+     在自己的主页中存储数据、共享文档、以及提供用自己的个性化数据微调的ai模型。
+     在自己的主页中读取或下载（fork）别人的文档
+     在自己的主页中对文档追加评论，然后使用自己的主页网址签名；乃至关注别人的主页网址……
 
      文档生成与标签网络：
      对自己的文档打标、共享，查看别人共享的文档和打的标签，或fork，使用ai来探索标签与文库
 
      DID数字身份：
      上述系统不能枚举所有人的网址，如果每个人的网址中添加一个功能：在以太坊上创建一个DID记录自己的网址，并与某个指定的钱包进行“交易”，那么人人只需查询与此特定钱包的交易便可枚举所有具有网址
-
+     直接使用以太坊比较贵、其他：MicrosoftDID、Sovrin、uPort、Evernym、Civic、ShoCard。
+     
      senseurl：
-     这样的网址 ，可能称为senseurl（智慧url）
+     这样的主页网址 ，可能称为senseurl（智慧url）
 
-一、开通
+
+
+一、开通。部署的个人服务器，也可以让其他人注册自己的账号（挂靠）
      1 认证email（必须）、邀请码（可选）
-     2 选择登录方式 ①密码、确认密码（哈希后作为auth-ID），②使用did，③使用区块链钱包，④使用微信扫码，或oauth认证
-     3 无论那种登录方式,成功后必须返回auth-ID，后端查询soft/auth-ID是否已存在
+     2 选择登录方式 ①密码、确认密码（哈希后作为auth-ID），②使用微信扫码，③oauth认证，③使用did、区块链钱包认证
+       接下来会为每个开通的人分配一个序号（自然数）作为他在本服务器的ID，称为hard-ID。服务器的拥有者的id为0
+     3 无论那种登录方式,认证成功后必须返回auth-ID，后端查询/clone/soft/auth-ID 软连接是否已存在：
           3.1 已存在
-               3.1.1 且可访问,跳过
-               3.1.2 但不可访问，删除，执行3.2
+               3.1.1 且软连接可访问,跳过
+               3.1.2 但不可访问，删除软连接，执行3.2
           3.2 不存在
-               3.2.1 查找hard/下最大序号{Max}
-               3.2.2 在hard/下创建目录: {Max+1}
-               3.2.3 添加文件：echo {Max+1} > hard/{Max+1}/hard-ID
-               3.2.4 添加文件：echo {auth-ID} >> hard/{Max+1}/auth-ID
-               3.2.5 添加文件：echo email >> hard/{Max+1}/email
+               3.2.1 查找/clone/hard/下最大序号{Max}
+               3.2.2 创建: /clone//hard/{Max+1}
+               3.2.3 添加文件：echo {Max+1} > /clone/hard/{Max+1}/hard-ID
+               3.2.4 添加文件：echo {auth-ID} >> /clone/hard/{Max+1}/auth-ID
+               3.2.5 添加文件：echo email >> /clone/hard/{Max+1}/email
                可选（方便管理函数直接访问而避免搜索枚举）：
-               3.2.6 在soft/下创建软连接：auth-ID --> ../hard/{Max+1}
-               3.2.7 在soft/下创建软连接：email --> ../hard/{Max+1}
-     4 建立主页 拷贝模板template/index.html、senseurl.html、 hi.html 到hard/{Max+1}/
-     5 建立profile 拷贝模板template/profile.html 到hard/{Max+1}/
-     6 建立主api 拷贝模板template/crud.py 文件到hard/{Max+1}/
-     7 建立其他api 拷贝模板template/api 文件到hard/{Max+1}/api/
-     8 前端返回(主页) http://sensevine.com/{Max+1}
-     9 前端返回(个人信息) http://sensevine.com/{Max+1}/profile.html
-     10 前端返回(管理后台) http://sensevine.com/{Max+1}/api
+               3.2.6 在soft/下创建软连接：auth-ID --> ../clone/hard/{Max+1}
+               3.2.7 在soft/下创建软连接：email --> ../clone/hard/{Max+1}
+     4 按本项目中的 目录结构 初始化注册用户个人目录，开通后返回：
+          4.1 个人主页 http://sensevine.com/{Max+1}
+          4.2 个人管理后台 http://sensevine.com/{Max+1}/api
 
 
 二、开通后具有
-     1 匿名用户打开http://sensevine.com/hard-ID/ 显示主人ID、通讯录、探索、登录
-          1.1 主人ID：个人主页、个人信息
+     1 匿名用户用浏览器打开http://sensevine.com/hard-ID/ 显示: @主人ID、通讯录、探索。分别点击它们会出现：
+          1.1 主人ID：登录、留言、群组、私信
           1.2 通讯录：关注、被关注
+               1.2.1 关注：展示联系人、和新建联系人（如果有被共享）
+               1.2.2 被关注：（同上）
           1.3 探索：（展示此主人的标签与相关内容和微调的ai）
-          1.4 登录：主人登录
-          **index.html
-     2 用智慧url》通讯录》添加 http://sensevine.com/hard-ID/ 、或ipfs哈希 、或子域名（txt解析）
-          2.1 通讯录》点击添加的用户，显示：主人ID(关注、备注)、通讯录、探索
-          **daitiqi.html
-     3 主人登录显示主人ID、通讯录、探索
-          3.1 主人ID: 显示注销、添加/删除登录方式
-          3.2 添加登录方式参考 一、3.2
-          3.3 删除登录方式反向 一、3.2
-          3.4 对于没有任何登录方式的（hard/hard-ID/auth-ID hard/hard-ID/email 均为空）有root管理定期遍历删除（每两周遍历一次，第二次遍历时删除）
-          **hi.html
+     2 主人登录后，@主人ID/登录 变得可展开，具体功能：
+          3.1 显示注销、添加/删除登录方式
+          3.2 添加登录方式参考 （一、3.2）
+          3.3 删除登录方式：与上面相反操作
+          3.4 管理者定期遍历没有任何登录方式的账号，每两周遍历一次，第二次遍历时删除这些账号
+     3 点击通讯录中，已存在的任何联系人，显示： @主人ID、通讯录、探索。分别点击它们会出现：
+          2.1 @主人ID：此联系人的id详情
+          2.2 通讯录：此联系人的关注、被关注 里的联系人列表
+          2.3 探索: 此联系人的共享内容
 
 三、权限
      1 使用oauth认证 --> 得到auth-ID
-     2 生成token，存储到soft/auth-ID/JWT
-     3 前端显示token 和soft/auth-ID/hard-ID
-     4 前端使用 http://sensevine.com/hard-ID/{read|upload|mkdir|delete}?token={token}
-     5 后端比对通过soft/auth-ID/JWT 验证Token有效性，否则直接退出
+     2 生成token，存储到/clone/soft/auth-ID/JWT
+     3 前端显示token 和/clone/soft/auth-ID/hard-ID
+     4 后端通过对比/clone/soft/auth-ID/JWT 验证Token有效性
+
+
+
+
+
+
 
 
 
