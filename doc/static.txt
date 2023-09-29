@@ -1,0 +1,199 @@
+〇、说明
+     1、SenseURL（智慧url）概念：
+     得益于云服务发展，人人可以轻易搭建个一个网址(指向一个网站)。例如 https://example.com/helen
+     扩充网址(所指的网站)的功能，比如加入人工智能、爬虫，让它能自动爬取和整理数据……直到能代替自己自动处理互联网上的事务，成为自己的一个互联网事务代理人。
+     人人都使用自己的网址(所指的网站)来互加好友、互相聊天。那这就是一个完美的去中心化聊天软件。
+     理论上，手机也是可以启动网址的
+     这样的网址，可以称为senseurl（智慧url）
+     url本身具有全球唯一性，因此可以直接使用url来作为个人的网络id，例如：example.com/helen（类似电子邮箱 helen@example.com）
+
+     2、SNI代理：
+     
+
+     2、评论文档概念：
+     将任何一篇文章、文档，用一个ipfs的内容哈希（CID）来记录。
+     将文章或文档按顺序进行拆分，每个部分都是对此uuid的按序的“评论”.
+     因此一份文档本质上可视为是一个讨论帖与评论没有区别，也有一个uuid。示例:
+     //文档uuid_0
+     {
+          "id": uuid_0,
+          "Committer": senseurl_0,  //评论者的senseurl,例如example.com/helen
+          "timestamp": 2021-01-01 12:00:00 UTC, //评论时间
+          "content"：URL_0  //超链接URL（也可以是ipfs网络的内容哈希）指向具体的内容,例如https://example.com/helen/uuid_0
+     }
+
+     //评论uuid_1（针对uuid_0）
+     {
+          "id": uuid_1,
+          "Committer": senseurl_1,
+          "Comments on": uuid_0,
+          "timestamp": 2021-01-01 12:00:00 UTC, //评论时间
+          "content"：URL_1
+     }
+     
+     //评论uuid_2（针对uuid_0）
+     {
+          "id": uuid_2,
+          "Committer": senseurl_2,
+          "Comments on": uuid_0,
+          "timestamp": 2021-01-01 12:00:00 UTC, //评论时间
+          "content"：URL_2
+     }
+
+     //评论uuid_3（针对uuid_1）
+     {
+          "id": uuid_3,
+          "Committer": senseurl_3,
+          "Comments on": uuid_1,
+          "timestamp": 2021-01-01 12:00:00 UTC, //评论时间
+          "content"：URL_3
+     }
+     
+     ……
+     再使用一个json记录所有评论的uuid，这些评论之间的关系形成一棵索引“树”，评论索引树:
+     {
+          "id": uuid_0,
+          "Comments": [uuid_1, uuid_2],
+          {
+               id: uuid_1,
+               "Comments": uuid_3
+          },
+     }
+     表述对于uuid_0存在两个评论，分别是uuid_1, uuid_2，其中uuid_1又存在一个评论uuid_3
+     这样可以使用一个函数，将json记录树渲染为web页面，呈现为一篇文档、或讨论帖。
+     因为Committer使用了senseurl，因此可以方便的将评论者的个人信息、个人网址、个人数据、个人ai模型、个人文档、个人标签、个人评论、个人收藏等等，与评论者的senseurl关联起来，形成一个个人的网络形象。
+
+     网址网络：
+     在自己的网址中存储数据、共享文档、以及提供用自己的个性化数据微调的ai模型。
+     在自己的网址中读取或下载（fork）别人的文档
+     在自己的网址中对文档追加评论，然后使用自己的网址签名；乃至关注别人的网址……
+
+     文档生成与标签网络：
+     对自己的文档打标、共享，查看别人共享的文档和打的标签，或fork，使用ai来探索标签与文库
+
+     DID数字身份：
+     上述系统不能枚举所有人的网址，如果每个人的网址中添加一个功能：在以太坊上创建一个DID记录自己的网址，并与某个指定的钱包进行“交易”，那么人人只需查询与此特定钱包的交易便可枚举所有具有网址
+
+     senseurl：
+     这样的网址 ，可能称为senseurl（智慧url）
+
+一、开通
+     1 认证email（必须）、邀请码（可选）
+     2 选择登录方式 ①密码、确认密码（哈希后作为auth-ID），②使用did，③使用区块链钱包，④使用微信扫码，或oauth认证
+     3 无论那种登录方式,成功后必须返回auth-ID，后端查询soft/auth-ID是否已存在
+          3.1 已存在
+               3.1.1 且可访问,跳过
+               3.1.2 但不可访问，删除，执行3.2
+          3.2 不存在
+               3.2.1 查找hard/下最大序号{Max}
+               3.2.2 在hard/下创建目录: {Max+1}
+               3.2.3 添加文件：echo {Max+1} > hard/{Max+1}/hard-ID
+               3.2.4 添加文件：echo {auth-ID} >> hard/{Max+1}/auth-ID
+               3.2.5 添加文件：echo email >> hard/{Max+1}/email
+               可选（方便管理函数直接访问而避免搜索枚举）：
+               3.2.6 在soft/下创建软连接：auth-ID --> ../hard/{Max+1}
+               3.2.7 在soft/下创建软连接：email --> ../hard/{Max+1}
+     4 建立主页 拷贝模板template/index.html、senseurl.html、 hi.html 到hard/{Max+1}/
+     5 建立profile 拷贝模板template/profile.html 到hard/{Max+1}/
+     6 建立主api 拷贝模板template/crud.py 文件到hard/{Max+1}/
+     7 建立其他api 拷贝模板template/api 文件到hard/{Max+1}/api/
+     8 前端返回(主页) http://sensevine.com/{Max+1}
+     9 前端返回(个人信息) http://sensevine.com/{Max+1}/profile.html
+     10 前端返回(管理后台) http://sensevine.com/{Max+1}/api
+
+
+二、开通后具有
+     1 匿名用户打开http://sensevine.com/hard-ID/ 显示主人ID、通讯录、探索、登录
+          1.1 主人ID：个人主页、个人信息
+          1.2 通讯录：关注、被关注
+          1.3 探索：（展示此主人的标签与相关内容和微调的ai）
+          1.4 登录：主人登录
+          **index.html
+     2 用智慧url》通讯录》添加 http://sensevine.com/hard-ID/ 、或ipfs哈希 、或子域名（txt解析）
+          2.1 通讯录》点击添加的用户，显示：主人ID(关注、备注)、通讯录、探索
+          **daitiqi.html
+     3 主人登录显示主人ID、通讯录、探索
+          3.1 主人ID: 显示注销、添加/删除登录方式
+          3.2 添加登录方式参考 一、3.2
+          3.3 删除登录方式反向 一、3.2
+          3.4 对于没有任何登录方式的（hard/hard-ID/auth-ID hard/hard-ID/email 均为空）有root管理定期遍历删除（每两周遍历一次，第二次遍历时删除）
+          **hi.html
+
+三、权限
+     1 使用oauth认证 --> 得到auth-ID
+     2 生成token，存储到soft/auth-ID/JWT
+     3 前端显示token 和soft/auth-ID/hard-ID
+     4 前端使用 http://sensevine.com/hard-ID/{read|upload|mkdir|delete}?token={token}
+     5 后端比对通过soft/auth-ID/JWT 验证Token有效性，否则直接退出
+
+
+
+图标：https://remixicon.com/
+https://ionic.io/ionicons/
+
+
+
+还真是超级复杂，
+但我的思维是形象的、可能也是我的理论知识深度不够吧。我对目前我的应用，设计使用“评论单元”、ipfs网络（内容哈希、替代或补充url）、鼓励人人建立自己的api接口（存储数据、提供函数计算）。每个人可以选择将自己的评论以及维护的“评论单元索引图”（依据“评论索引图”索引各个评论内容并依据图的关系组装，便是文档或网络讨论帖，也可用以定位自己的评论所在位置）存储在自己的api中，并向外提供（使用ipfs进行加速），api向外展示的也相当于就是每个人的“在线形象”。
+
+在此，我似乎感觉，也可以使用api地址来直接作为id使用。
+1 api服务运行在计算机系统上，有了api，也就有了自己的存储空间和执行函数代码的算力，这就像是某种真实的线上“实体”，比起只有一个字符串的id,更像是各"活"着的id。
+2 直接使用api上的域名做身份认证，比如在域名的txt解析中提供相关指证。
+3 如果确实不宜直接使用api地址作为身份id，那么可考虑在api接口中提供调用私钥认证、ID、认证函数(比如通过特定接口函数请求手机等其他设备做二次认证)的身份标识功能。
+4 为区别“语义网”，暂时将这个叫做“评论单元互引网”。 是否可以基于api中存储的个人数据，或api作为id在其他人的“api”中做的“留言评论”的相互关系做身份认证？
+……
+这些只是我不成熟的一些预想，我确实选择还构想不出来直接使用个人私有的api来做身份id或甚至用来做身份认证……是否现实。
+对于人们使用自己的api地址来作为身份标识，这里还有很多没想清楚：
+
+2 
+，并使用api地址做为身份id、如果）
+
+
+
+
+
+
+人手一个api,提供个人数据和评论收集
+
+
+
+1、token授权
+2、同步书签
+3、文件json处理
+
+
+
+https://chat.openai.com/share/b1ed9526-caa7-47fe-bd2b-d144028049e9
+编辑器：
+vscode 编辑模块web: https://github.com/microsoft/monaco-editor
+stable: https://docs.slatejs.org/concepts/12-typescript
+quill： https://github.com/quilljs/quill
+hi
+npm run dev
+http://4.193.54.245:5000
+uvicorn fa:app --reload --host 0.0.0.0 --port 8000
+uvicorn au:app --reload --host 0.0.0.0 --port 8001
+uvicorn fc:app --reload --host 0.0.0.0 --port 8002
+http://4.193.54.245:8002/Dw4XJS91m0FAnGdC/abcd.txt.-_-ZfZl5WXgWRo.py
+http://4.193.54.245:8002/static/static.txt/read
+http://4.193.54.245:8003/
+http://0.0.0.0:8003/
+https://github.com/login/oauth/authorize?client_id=e709aff2635aeb82880b
+1 跨站访问,使用一个http目录来做认证
+2 访问权限
+3 页面布局
+4 收藏夹扩展
+gihub
+Client ID: e709aff2635aeb82880b
+Client secrets
+350ecd77f22ef351ef4109217fa82e06bdc6ab3d
+https://github.com/login/oauth/authorize?client_id=e709aff2635aeb82880b
+http://4.193.54.245:8002/items
+
+curl -X POST "https://github.com/login/oauth/access_token" \
+     -H "Accept: application/json" \
+     -d "client_id=e709aff2635aeb82880b&client_secret=350ecd77f22ef351ef4109217fa82e06bdc6ab3d&code=82f493b86b6dc0a591bd"
+
+curl -X 'GET' \
+  'http://4.193.54.245:8002/items/' \
+  -H 'Authorization: asdfasdf'

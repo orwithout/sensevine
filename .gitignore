@@ -1,5 +1,6 @@
 svelte/node_modules/
 svelte/public/build/
+
 fastapi/public-test/chat.py
 chat.py
 
