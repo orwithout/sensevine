@@ -2,36 +2,82 @@
 	import Explorer from './Explorer/Explorer.svelte';
 	let root = [
 		{
-			type: 'folder',
-			name: 'Important work stuff',
-			files: [{ type: 'file', name: 'quarterly-results.xlsx' }]
-		},
-		{
-			type: 'folder',
-			name: 'Animal GIFs',
+			type: 'folder',	name: '@灰面',
 			files: [
 				{
-					type: 'folder',
-					name: 'Dogs',
+					type: 'folder', name: '登录',
 					files: [
-						{ type: 'file', name: 'treadmill.gif' },
-						{ type: 'file', name: 'rope-jumping.gif' }
+						{
+							type: 'folder', name: '登录方式管理',
+							files: [
+								{ type: 'file', name: '电子邮箱.json' },
+								{ type: 'file', name: '微信扫码.json' },
+								{ type: 'file', name: '.新建.senseurl.com.py' }
+							]
+						},
+						{ type: 'file', name: '.登录.senseurl.com.py' },
+						{ type: 'file', name: '.注销.senseurl.com.py' }
 					]
 				},
 				{
-					type: 'folder',
-					name: 'Goats',
-					files: [
-						{ type: 'file', name: 'parkour.gif' },
-						{ type: 'file', name: 'rampage.email' }
-					]
+					type: 'folder', name: '留言',
+					files: []
 				},
-				{ type: 'file', name: 'cat-roomba.gif' },
-				{ type: 'file', name: 'duck-shuffle.gif' },
-				{ type: 'file', name: 'monkey-on-a-pig.gif' }
+				{
+					type: 'folder', name: '群组',
+					files: []
+				},
+				{
+					type: 'folder', name: '私信',
+					files: []
+				}
 			]
 		},
-		{ type: 'file', name: 'TODO.md' }
+		{
+			type: 'folder',	name: '探索', files: []
+		},
+		{
+			type: 'folder',	name: '通讯录',
+			files: [
+				{
+					type: 'folder', name: '关注',
+					files: [
+						{
+							type: 'folder', name: '增醉墨' ,
+							files: [
+								{ type: 'folder', name: '主人信息', files: [] },
+								{ type: 'folder', name: '群组', files: [] },
+								{ type: 'folder', name: '探索', files: [] },
+								{ type: 'file', name: '.RSS订阅拉取.senseurl.com.py'},
+								{ type: 'file', name: '.新建.senseurl.com.py'},
+							]
+						},
+						{ type: 'folder', name: '同其尘' , files: [] },
+						{ type: 'folder', name: '飒' , files: [] }
+					]
+				},
+				{
+					type: 'folder', name: '被关注',
+					files: [
+						{ type: 'folder', name: '同其尘' , files: [] },
+						{ type: 'folder', name: '飒' , files: [] }
+					]
+				},
+				{
+					type: 'folder', name: '黑名单',
+					files: [
+						{ type: 'folder', name: '鸡毛令箭' , files: [] },
+						{ type: 'folder', name: '和尚' , files: [] }
+					]
+				}
+			]
+		},
+		{ type: 'file', name: 'id.auth' },
+		{ type: 'file', name: 'id.email' },
+		{ type: 'file', name: 'id.hard' },
+		{ type: 'file', name: 'JWT.json' },
+		{ type: 'file', name: 'senseurl.py' },
+		{ type: 'file', name: 'senseurl0.py' }
 	];
 
 	let ROWS = [root, root, root, root, root, root, root, root];
@@ -63,7 +109,7 @@
 	<div class="columns-container">
 		{#each COLUMNS as COLUMN}
 			<div class="columns-container">
-				<Explorer name="Home" files={ROW} expanded />
+				<Explorer name="senseurl.com" files={ROW} expanded />
 			</div>
 		{/each}
 	</div>
