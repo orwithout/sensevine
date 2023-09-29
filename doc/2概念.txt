@@ -1,3 +1,5 @@
+     演示：http://sensevine.com
+
 〇、说明
      1、SenseURL（智慧url）概念：
      得益于云服务发展，人人可以轻易搭建个一个主页（得到一个网址），例如 https://example.com/helen
@@ -97,7 +99,7 @@
                可选（方便管理函数直接访问而避免搜索枚举）：
                3.2.6 在soft/下创建软连接：auth-ID --> ../clone/hard/{Max+1}
                3.2.7 在soft/下创建软连接：email --> ../clone/hard/{Max+1}
-     4 按本项目中的 目录结构 初始化注册用户个人目录，开通后返回：
+     4 按本项目中的 目录结构（参考下面的 “四、附录” ） 初始化注册用户个人目录，开通后返回：
           4.1 个人主页 http://sensevine.com/{Max+1}
           4.2 个人管理后台 http://sensevine.com/{Max+1}/api
 
@@ -126,6 +128,40 @@
      4 后端通过对比/clone/soft/auth-ID/JWT 验证Token有效性
 
 
+
+四、附 目录结构
+.
+└── senseurl.com
+    └── 0
+        ├── JWT.json
+        ├── clone
+        │   ├── hard
+        │   └── soft
+        ├── id.auth
+        ├── id.email
+        ├── id.hard
+        ├── senseurl
+        │   ├── @格伦至
+        │   │   ├── 留言
+        │   │   ├── 登录
+        │   │   │   ├── 注销.py
+        │   │   │   └── 登录方式管理
+        │   │   ├── 私信
+        │   │   └── 群组
+        │   ├── 主页.htm
+        │   ├── 探索
+        │   └── 通讯录
+        │       ├── 关注
+        │       │   ├── 同其尘
+        │       │   ├── 新建.py
+        │       │   ├── 曾醉墨
+        │       │   │   └── 群组
+        │       │   └── 飒
+        │       └── 被关注
+        │           ├── 同其尘
+        │           └── 飒
+        ├── senseurl.py
+        └── senseurl0.py
 
 
 
