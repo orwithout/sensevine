@@ -1,0 +1,56 @@
+接下来要做：
+1 后端，设计json对象，描述主目录中每个文件或目录的权限、文件作用
+2 页面载入时，后端根据权限、文件作用，扫描主目录，返回目录结构json给前端，渲染出主页面
+3 前端允许选中目录或文件，获取选中的目录或文件的路径
+4 前端选中文件或目录时，展示文件作用菜单按钮
+5 作用菜单按钮，直接调用可用的脚本或函数库
+……
+
+
+
+
+可能会用到的开源项目
+
+前端svelte：
+https://github.com/sveltejs/svelte
+https://svelte.dev/examples/svelte-self
+https://svelte.dev/examples/update
+https://svelte.dev/examples/custom-js-transitions
+
+前端富文本编辑器：
+https://github.com/quilljs/quill
+
+
+
+后端fastapi:
+https://github.com/tiangolo/fastapi
+https://fastapi.tiangolo.com/zh/
+
+ipfs (orbitDB):
+https://github.com/orbitdb
+
+
+
+ABE属性加密（用于群组权限）
+Charm-Crypto：
+https://github.com/JHUISI/charm
+OpenABE：
+https://github.com/zeutro/openabe
+
+
+
+GPT :
+gpt-academic:
+https://github.com/binary-husky/gpt_academic
+
+autogpt:
+https://github.com/Significant-Gravitas/AutoGPT
+
+gpt-engineer:
+https://github.com/AntonOsika/gpt-engineer
+
+wenda:
+https://github.com/wenda-LLM/wenda
+
+open-interpreter:
+https://github.com/KillianLucas/open-interpreter

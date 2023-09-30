@@ -12,6 +12,7 @@
 							files: [
 								{ type: 'file', name: '电子邮箱.json' },
 								{ type: 'file', name: '微信扫码.json' },
+								{ type: 'file', name: '说明.txt' },
 								{ type: 'file', name: '.新建.senseurl.com.py' }
 							]
 						},
@@ -76,6 +77,10 @@
 		{ type: 'file', name: 'id.email' },
 		{ type: 'file', name: 'id.hard' },
 		{ type: 'file', name: 'JWT.json' },
+		{ type: 'file', name: 'excel.xls' },
+		{ type: 'file', name: 'excel.xlsx' },
+		{ type: 'file', name: 'excel.doc' },
+		{ type: 'file', name: 'excel.docx' },
 		{ type: 'file', name: 'senseurl.py' },
 		{ type: 'file', name: 'senseurl0.py' }
 	];
