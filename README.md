@@ -1,7 +1,8 @@
 # senseVine 项目说明
 
-senseVine.com 使用python、结合AI来处理文件（分类、查询、总结、理解、翻译…）和创作内容的活动的知识库网站。现在处于初创阶段。
-此文档将指导您如何在 Windows 和 Linux 系统上设置并运行 senseVine 项目。
+查看： [设计文档](https://github.com/orwithout/sensevine/tree/main/doc)
+
+
 
 
 ## 一、演示

@@ -15,19 +15,8 @@
 
 
 
-https://fontawesome.com/search?o=r&m=free
-https://tabler-icons.io/
-https://remixicon.com/
-https://feathericons.com/
 
 
-
-https://w3c.github.io/activitypub/#bib-activitystreams
-
-https://learn.microsoft.com/zh-cn/common-data-model/sdk/overview
-https://github.com/microsoft/CDM/tree/master/schemaDocuments#directory-of-cdm-entities
-
-https://github.com/ipfs-shipyard/git-remote-ipld
 
 可能会用到的开源项目
 
@@ -48,10 +37,6 @@ https://fastapi.tiangolo.com/zh/
 
 ipfs (orbitDB):
 https://github.com/orbitdb
-
-Fediverse(宇宙联邦网)：
-https://www.w3.org/TR/activitypub/
-https://zh.wikipedia.org/zh-hans/%E8%81%94%E9%82%A6%E5%AE%87%E5%AE%99
 
 
 

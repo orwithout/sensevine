@@ -85,8 +85,8 @@
 		{ type: 'file', name: 'senseurl0.py' }
 	];
 
-	let ROWS = [root, root, root, root, root, root, root, root];
-	let COLUMNS = [root,root, root, root, root];
+	let ROWS = [root];
+	let COLUMNS = [root];
 
 </script>
 
