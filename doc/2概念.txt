@@ -41,15 +41,6 @@
           "timestamp": 2021-01-01 12:00:00 UTC, //评论时间
           "content"：URL_2
      }
-
-     //评论uuid_3（针对uuid_1）
-     {
-          "id": uuid_3,
-          "Committer": senseurl_3,
-          "Comments on": uuid_1,
-          "timestamp": 2021-01-01 12:00:00 UTC, //评论时间
-          "content"：URL_3
-     }
      
      ……
      再使用一个json记录所有评论的uuid，这些评论之间的关系形成一棵索引“树”，评论索引树:
