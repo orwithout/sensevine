@@ -1,0 +1,10 @@
+Alt-Svc: h3=":443"; ma=2592000
+Cache-Control: no-store, no-cache, must-revalidate
+Content-Disposition: attachment; filename="hahaha.yaml"
+Content-Type: application/octet-stream; charset=utf-8
+Date: Tue, 10 Oct 2023 12:05:46 GMT
+Profile-Update-Interval: 12
+Profile-Web-Page-Url: https://dler.pro
+Server: Caddy, Tengine
+Strict-Transport-Security: max-age=31536000
+Subscription-Userinfo: upload=551706318; download=10882170793; total=1073741824000; expire=1726635016

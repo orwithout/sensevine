@@ -11,6 +11,21 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+import importlib
+from fastapi import FastAPI, HTTPException, Response
+
+
+
+# 获取当前脚本的绝对路径
+current_script_path = os.path.abspath(__file__)
+
+# 获取当前脚本的目录
+current_script_dir = os.path.dirname(current_script_path)
+
+# 切换当前工作目录到current_script_dir
+os.chdir(current_script_dir)
+
+
 
 with open("config.json", "r") as f:
     config = json.load(f)
@@ -38,8 +53,6 @@ def secure_path(path: str, base_directory: str) -> PythonPath:
 
 
 
-
-
 @app.get("/static/{file_path:path}")
 async def read_static(file_path: str):
     complete_path = os.path.join("public-test", file_path)
@@ -49,14 +62,14 @@ async def read_static(file_path: str):
         raise HTTPException(status_code=404, detail="File not found")
 
 
-
-
 @app.get(f"{svd_password}/{{path:path}}/{{action}}")
 async def file_operations(action: str, path: str, params: Optional[str] = None):
     base_directory = os.getcwd()
     target_path = secure_path(path, base_directory)
-    
-    print("svd_password:", svd_password)
+    # 获取target_path相对于base_directory的路径
+    relative_path = target_path.relative_to(base_directory)
+
+    # print("svd_password:", svd_password)
     # Read File
     if action == "read":
         if os.path.exists(target_path) and os.path.isfile(target_path):
@@ -65,6 +78,17 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
             return {"content": content}
         else:
             raise HTTPException(status_code=404, detail="File not found")
+
+
+
+    elif action == "raw":
+        if os.path.exists(target_path) and os.path.isfile(target_path):
+            return FileResponse(target_path)
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+
+
+
 
     # List Directory
     elif action == "list":
@@ -117,9 +141,63 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
         else:
             raise HTTPException(status_code=404, detail="File not found")
 
+    elif action == "get":
+        # 确保路径是一个Python文件
+        if not str(target_path).endswith(".py"):
+            raise HTTPException(status_code=400, detail="Invalid file type")
+        module_name = str(relative_path).replace("/", ".").rstrip(".py")
+        try:
+
+            # print("Current directory:", os.getcwd())
+            # original_directory = os.getcwd()
+
+            # os.chdir(os.path.dirname(target_path))
+            # print("Current directory:", os.getcwd())
+
+            # 动态导入模块
+            module = importlib.import_module(module_name)
+
+            # 从模块中获取函数并执行它
+            func = getattr(module, path.split("/")[-1].rstrip(".py"))
+            # headers, content = func(argv=params)  # 传递params参数
+            headers, content = func(argv=params) if params else func()
+
+            # os.chdir(original_directory)
+            # print("Current directory:", os.getcwd())
+            
+            return Response(content=content, headers=headers)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
-    
+
+    # elif action == "get":
+    #     # 确保路径是一个Python文件
+    #     if not str(target_path).endswith(".py"):
+    #         raise HTTPException(status_code=400, detail="Invalid file type")
+        
+    #     # 假设所有模块都在'api'包内
+    #     relative_module_path = "." + str(target_path).replace("/", ".").rstrip(".py")
+    #     print(relative_module_path)
+    #     try:
+    #         # 动态导入模块
+    #         module = importlib.import_module(relative_module_path, package="api")
+
+    #         # 从模块中获取函数并执行它
+    #         func = getattr(module, path.split("/")[-1].rstrip(".py"))
+    #         headers, content = func(params)  # 传递params参数
+
+    #         return Response(content=content, headers=headers)
+    #     except Exception as e:
+    #         raise HTTPException(status_code=500, detail=str(e))
+    # else:
+    #     raise HTTPException(status_code=400, detail="Invalid action")
+
+
+
+
+
+
 
 @app.post(f"{svd_password}/{{path:path}}/{{action}}")  # 使用 POST 方法
 async def file_operations(action: str, path: str, params: Optional[str] = None, file: UploadFile = File(...)):
