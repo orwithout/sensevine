@@ -22,7 +22,7 @@ current_script_path = os.path.abspath(__file__)
 # 获取当前脚本的目录
 current_script_dir = os.path.dirname(current_script_path)
 
-# 切换当前工作目录到current_script_dir
+# 切换当前工作目录到 current_script_dir
 os.chdir(current_script_dir)
 
 
@@ -50,6 +50,32 @@ def secure_path(path: str, base_directory: str) -> PythonPath:
     if base not in full_path.parents:
         raise HTTPException(status_code=403, detail="Operation not permitted")
     return full_path
+
+
+def format_list_recursive(path, base_path="", depth=None):
+    if depth is not None and depth <= 0:
+        return []
+    
+    if not os.path.isdir(path):
+        return [{"name": os.path.basename(path), "path": base_path}]
+    
+    files = []
+    for item in os.listdir(path):
+        item_path = os.path.join(path, item)
+        next_depth = depth - 1 if depth is not None else None
+        if os.path.isdir(item_path):
+            files.append({
+                "name": item,
+                "path": base_path,  # Notice we no longer append the item to the base_path
+                "files": format_list_recursive(item_path, os.path.join(base_path, item) + '/', next_depth)
+            })
+        else:
+            files.append({"name": item, "path": base_path})
+    return files
+
+
+
+
 
 
 
@@ -88,14 +114,13 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
             raise HTTPException(status_code=404, detail="File not found")
 
 
-
-
     # List Directory
     elif action == "list":
-        if os.path.exists(target_path) and os.path.isdir(target_path):
-            return {"content": os.listdir(target_path)}
+        if os.path.exists(target_path):
+            depth = int(params) if params else None
+            return {"content": format_list_recursive(target_path, base_path='', depth=depth)}
         else:
-            raise HTTPException(status_code=404, detail="Directory not found")
+            raise HTTPException(status_code=404, detail="Directory or file not found")
 
 
     # Update File
@@ -171,6 +196,8 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
 
+
+    #
     # elif action == "get":
     #     # 确保路径是一个Python文件
     #     if not str(target_path).endswith(".py"):
@@ -192,10 +219,7 @@ async def file_operations(action: str, path: str, params: Optional[str] = None):
     #         raise HTTPException(status_code=500, detail=str(e))
     # else:
     #     raise HTTPException(status_code=400, detail="Invalid action")
-
-
-
-
+    #
 
 
 
@@ -217,5 +241,5 @@ async def file_operations(action: str, path: str, params: Optional[str] = None, 
             raise HTTPException(status_code=500, detail=str(e))
     else:
         raise HTTPException(status_code=400, detail="Invalid action")
-    
+
 

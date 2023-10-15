@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=mian
 Group=mian
-WorkingDirectory=/home/mian/senseVine/fastapi
+WorkingDirectory=/home/mian/git/sensevine/fastapi
 ExecStart=/home/mian/.local/bin/uvicorn svd:app --reload --port 8002
 ExecReload=/bin/kill -HUP ${MAINPID}
 RestartSec=1
@@ -15,4 +15,3 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
-

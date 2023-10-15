@@ -1,92 +1,41 @@
 <script>
 	import Explorer from './Explorer/Explorer.svelte';
-	let root = [
-		{
-			type: 'folder',	name: '@灰面',
-			files: [
-				{
-					type: 'folder', name: '登录',
-					files: [
-						{
-							type: 'folder', name: '登录方式管理',
-							files: [
-								{ type: 'file', name: '电子邮箱.json' },
-								{ type: 'file', name: '微信扫码.json' },
-								{ type: 'file', name: '说明.txt' },
-								{ type: 'file', name: '.新建.senseurl.com.py' }
-							]
-						},
-						{ type: 'file', name: '.登录.senseurl.com.py' },
-						{ type: 'file', name: '.注销.senseurl.com.py' }
-					]
-				},
-				{
-					type: 'folder', name: '留言',
-					files: []
-				},
-				{
-					type: 'folder', name: '群组',
-					files: []
-				},
-				{
-					type: 'folder', name: '私信',
-					files: []
-				}
-			]
-		},
-		{
-			type: 'folder',	name: '探索', files: []
-		},
-		{
-			type: 'folder',	name: '通讯录',
-			files: [
-				{
-					type: 'folder', name: '关注',
-					files: [
-						{
-							type: 'folder', name: '增醉墨' ,
-							files: [
-								{ type: 'folder', name: '主人信息', files: [] },
-								{ type: 'folder', name: '群组', files: [] },
-								{ type: 'folder', name: '探索', files: [] },
-								{ type: 'file', name: '.RSS订阅拉取.senseurl.com.py'},
-								{ type: 'file', name: '.新建.senseurl.com.py'},
-							]
-						},
-						{ type: 'folder', name: '同其尘' , files: [] },
-						{ type: 'folder', name: '飒' , files: [] }
-					]
-				},
-				{
-					type: 'folder', name: '被关注',
-					files: [
-						{ type: 'folder', name: '同其尘' , files: [] },
-						{ type: 'folder', name: '飒' , files: [] }
-					]
-				},
-				{
-					type: 'folder', name: '黑名单',
-					files: [
-						{ type: 'folder', name: '鸡毛令箭' , files: [] },
-						{ type: 'folder', name: '和尚' , files: [] }
-					]
-				}
-			]
-		},
-		{ type: 'file', name: 'id.auth' },
-		{ type: 'file', name: 'id.email' },
-		{ type: 'file', name: 'id.hard' },
-		{ type: 'file', name: 'JWT.json' },
-		{ type: 'file', name: 'excel.xls' },
-		{ type: 'file', name: 'excel.xlsx' },
-		{ type: 'file', name: 'excel.doc' },
-		{ type: 'file', name: 'excel.docx' },
-		{ type: 'file', name: 'senseurl.py' },
-		{ type: 'file', name: 'senseurl0.py' }
-	];
+	// export let name;
+	let foldersMatrix = [[{
+  		'./': ["a", "b", "c", {'abc/': ["d", "e", "f", {}]}]
+	}]];
 
-	let ROWS = [root];
-	let COLUMNS = [root];
+
+
+
+	import { fetchFileList } from './apiMethods.js';
+
+	let base_url = 'https://api.sensevine.com/1234567';
+	if (!base_url.endsWith('/')) {
+		base_url += '/';
+	}
+
+
+
+	async function handleFolderClick(event) {
+		const folderData = event.detail;
+
+		const response = await fetchFileList(base_url +folderData.path +'list');
+
+		if (response && response.content) {
+			console.log("Before updating foldersMatrix:", JSON.stringify(foldersMatrix));
+			// updateFoldersMatrix(folderData.columnIndex, folderData.folderIndex, folderData, response);
+			// console.log("After updating foldersMatrix:", JSON.stringify(foldersMatrix));
+		} else {
+			console.error("Failed to update foldersMatrix. Response:", response);
+		}
+	}
+
+
+
+
+
+
 
 </script>
 
@@ -98,7 +47,7 @@
 		white-space: nowrap;
 		/* flex-direction: column;  竖向排列 */
 	}
-	.columns-container {
+	.column-container {
 		flex-direction: column;  /* 竖向排列*/
 	}
 
@@ -109,14 +58,24 @@
 <main>
 </main>
 
+
+
+
+
+
+<!-- <button on:click={handleFolderClick}>Add Column</button> -->
+
+
+
 <div class="rows-container">
-	{#each ROWS as ROW}
-	<div class="columns-container">
-		{#each COLUMNS as COLUMN}
-			<div class="columns-container">
-				<Explorer name="senseurl.com" files={ROW} expanded />
-			</div>
-		{/each}
+	{#each foldersMatrix as column, columnIndex}
+	<div class="column-container">
+	  {#each column as folder, folderIndex}
+	  <div class="column-container">
+		<Explorer {...folder} columnIndex={columnIndex} folderIndex={folderIndex} selected_folder_icon on:folderclick={handleFolderClick} />
+		<!-- <pre>{JSON.stringify(column, null, 2)}</pre> -->
+	  </div>
+	  {/each}
 	</div>
 	{/each}
 </div>

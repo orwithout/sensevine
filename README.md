@@ -38,7 +38,10 @@ git clone https://www.github.com/orwithout/sensevine.git
     ```bash
     uvicorn svd:app --reload --host 0.0.0.0 --port 8002
     ```
-
+7. 问题，如果出现问题，可能需要给fastapi/svd.py 添加可执行权限：
+    ```bash
+    chmod +x svd.py
+    ```
 ### 步骤 3：安装前端依赖并运行前端
 1. 访问 [Node.js 官方下载页面](https://nodejs.org/zh-cn)
 2. 选择适合您的 Windows 版本
