@@ -32,7 +32,8 @@ dns:
   
   # 仅填写 DNS 服务器的 IP 地址，填写的 DNS 服务器将会被用来解析 nameserver 服务的域名
   default-nameserver:
-    - 202.96.134.133
+    - 119.29.29.29
+    - 223.5.5.5
     
   # 自定义DNS将添加在下方并优先使用 支持Doh/Dot等dns
   # 支持 UDP / TCP / DoT / DoH 协议的 DNS 服务，可以指明具体的连接端口号
