@@ -1,0 +1,17 @@
+[Unit]
+Description=sensevine-daemon
+After=network.target
+
+[Service]
+Type=simple
+User=mian
+Group=mian
+WorkingDirectory=/home/mian/git/sensevine/app
+ExecStart=/home/mian/.local/bin/uvicorn main:app --reload --port 8002
+ExecReload=/bin/kill -HUP ${MAINPID}
+RestartSec=1
+Restart=always
+
+
+[Install]
+WantedBy=multi-user.target
