@@ -1,104 +1,109 @@
-from fastapi import FastAPI, Query, HTTPException, Response
+from fastapi import FastAPI, Query, HTTPException, Header, File, UploadFile
 import os
 import importlib
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse, PlainTextResponse, Response
 
 app = FastAPI()
-# CORS settings
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
 
+import aiofiles
+from tempfile import NamedTemporaryFile
+async def handle_upload(file: UploadFile, user_id: int):
+    tmp_dir = os.path.join(str(user_id), 'tmp')
+    os.makedirs(tmp_dir, exist_ok=True)
+    
+    with NamedTemporaryFile(delete=False, dir=tmp_dir) as temp_file:
+        async with aiofiles.open(temp_file.name, 'wb') as out_file:
+            while content := await file.read(1024):
+                await out_file.write(content)
+        
+        return temp_file.name
 
-@app.get("/{user_id}/{path:path}")
+
+import inspect
+import logging
+logger = logging.getLogger(__name__)
+from pathlib import Path
+
+@app.api_route("/{user_id}/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 # user_id 是用户的主目录
 # path 是子目录
 # fn 是要调用的python脚本，可能包含“/”
-async def dynamic_route(user_id: int, path: str = "", fn: str = Query(...), args: str = Query(None)):
-    base_directory = os.path.realpath(str(user_id))
-    target_directory = os.path.realpath(os.path.join(base_directory, path))
-    # 确保目标目录在基目录下
-    if not target_directory.startswith(base_directory):
-        raise HTTPException(status_code=400, detail="Invalid path")
-    # 获取 target_directory 相对于 base_directory 的路径
-    target_directory = target_directory.relative_to("./")
+async def dynamic_route(user_id: int = 0, path: str = "", file: UploadFile = File(None), fn: str = Query("main_2_crud/read.py"), args: str = Query(None), accept: str = Header(None)):
+    base_dir = Path(str(user_id)).resolve()
+    full_path = (base_dir / path).resolve()
 
-    # 检查文件类型
+    # 确保目标路径在基目录下
+    if not full_path.is_relative_to(base_dir):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    # 获取 target_dir 相对于 base_dir 的路径
+    sub_path = full_path.relative_to(base_dir)
+
     if not fn.endswith(".py"):
         raise HTTPException(status_code=400, detail="Invalid file type")
 
-    # 你的其他逻辑...
+    # 如果有上传文件，保存到 temp_file_path
+    if file:
+        try:
+            temp_file_path = await handle_upload(file, base_dir)
+            # 现在你可以使用 temp_file_path 来处理上传的文件了
+            # 例如：result = some_function(file_path=temp_file_path)
+        except HTTPException as e:
+            raise e
+        except Exception as e:
+            logger.error(f"File upload error: {str(e)}")
+            raise HTTPException(status_code=500, detail="Internal Server Error file")
+    else:
+        temp_file_path = None
+
+    # 获取模块名、函数名（约定：文件中必须定义与文件名同名的函数）
     module_name = str(fn).replace("/", ".").rstrip(".py")
+    function_name = os.path.basename(fn).rstrip(".py")
+    print(fn)
+    print(module_name)
+    print(function_name)
     try:
-        # 动态导入模块
         module = importlib.import_module(module_name)
+        if hasattr(module, function_name):
+            # 获取目标函数
+            func = getattr(module, function_name)
+            # 获取 func 函数的参数信息
+            parameters = inspect.signature(func).parameters
+            
+            # 准备要传递给函数的参数
+            func_args = {'user_id': user_id, 'full_path': full_path, 'sub_path': sub_path, 'file_contents': temp_file_path, 'args': args}
+            
+            # 过滤掉不在函数参数列表中的参数
+            filtered_args = {k: v for k, v in func_args.items() if k in parameters}
 
-        # 从模块中获取函数并执行它
-        func = getattr(module, path.split("/")[-1].rstrip(".py"))
-
-
-        result = func(args=args) if args else func()
-
-        
-        headers, content = func(args=args) if args else func()
-
-        
-        return Response(content=content, headers=headers)
+            if accept == "application/json":
+                result = func(**filtered_args)
+                return JSONResponse(content=result)
+            elif accept == "text/plain":
+                headers, content = func(**filtered_args)
+                return Response(content=content, headers=headers)
+            else:
+                # If Accept header is not provided, default to JSON
+                result = func(**filtered_args)
+                return JSONResponse(content=result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-    # except HTTPException as e:
-    #     # 直接抛出 HTTPException 异常
-    #     raise e
-    # except Exception as e:
-    #     # 在生产环境中，你可能不想公开底层错误的详细信息
-    #     print(e)  # 仅用于调试
-    #     raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
-
-
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import JSONResponse
-import os
-import importlib
-from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI()
-
-# CORS settings
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
-    allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
-)
-
-@app.get("/{user_id}/{path:path}")
-async def dynamic_route(user_id: int, path: str = "", fn: str = Query(...), args: str = Query(None)):
-    # 省略安全和路径处理的代码...
-
-    try:
-        module = importlib.import_module("your_module")
-        func = getattr(module, "your_function")
-        result = func(args=args) if args else func()
-
-        if isinstance(result, dict):
-            return JSONResponse(content=result)
-        else:
-            # 如果结果不是字典，你可以选择如何处理
-            return result
-    except HTTPException as e:
-        # 直接抛出 HTTPException 异常
-        raise e
-    except Exception as e:
-        # 在生产环境中，你可能不想公开底层错误的详细信息
-        print(e)  # 仅用于调试
+        # traceback.print_exc()
+        logger.error(f"Internal server error: {str(e)}", extra={"user_id": user_id, "path": sub_path, "function": fn})
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    finally:
+        if temp_file_path and os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+            logger.info(f"Temporary file {temp_file_path} has been deleted.")
+
+
