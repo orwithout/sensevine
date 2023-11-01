@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, HTTPException, Header, File, UploadFile
+from fastapi import FastAPI, Query, HTTPException, Header, File, UploadFile,Depends
 import os
 import importlib
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +12,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 
 import aiofiles
@@ -33,12 +32,23 @@ import inspect
 import logging
 logger = logging.getLogger(__name__)
 from pathlib import Path
+from starlette.requests import Request
 
 @app.api_route("/{user_id}/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 # user_id 是用户的主目录
 # path 是子目录
 # fn 是要调用的python脚本，可能包含“/”
-async def dynamic_route(user_id: int = 0, path: str = "", file: UploadFile = File(None), fn: str = Query("main_2_crud/read.py"), args: str = Query(None), accept: str = Header(None)):
+async def dynamic_route(
+    request: Request,
+    user_id: int = 0,
+    path: str = "",
+    file: UploadFile = File(None),
+    fn: str = Query("main_2_crud/read.py"),
+    args: str = Query(None),
+    user_input: str = Header(None),
+    accept: str = Header(None),
+    content_type: str = Header(None)
+):
     base_dir = Path(str(user_id)).resolve()
     full_path = (base_dir / path).resolve()
 
@@ -62,16 +72,30 @@ async def dynamic_route(user_id: int = 0, path: str = "", file: UploadFile = Fil
             raise e
         except Exception as e:
             logger.error(f"File upload error: {str(e)}")
-            raise HTTPException(status_code=500, detail="Internal Server Error file")
+            raise HTTPException(status_code=500, detail=f"Internal Server Error during file upload: {str(e)}")
+
     else:
         temp_file_path = None
+
+    headers = request.headers
+    # 处理 body 数据
+    from json import JSONDecodeError
+    try:
+        if content_type == "application/json":
+            body = await request.json()
+        elif content_type == "application/x-www-form-urlencoded" or content_type == "multipart/form-data":
+            body = await request.form()
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported content type")
+    except JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
     # 获取模块名、函数名（约定：文件中必须定义与文件名同名的函数）
     module_name = str(fn).replace("/", ".").rstrip(".py")
     function_name = os.path.basename(fn).rstrip(".py")
-    print(fn)
-    print(module_name)
-    print(function_name)
     try:
         module = importlib.import_module(module_name)
         if hasattr(module, function_name):
@@ -81,7 +105,19 @@ async def dynamic_route(user_id: int = 0, path: str = "", file: UploadFile = Fil
             parameters = inspect.signature(func).parameters
             
             # 准备要传递给函数的参数
-            func_args = {'user_id': user_id, 'full_path': full_path, 'sub_path': sub_path, 'file_contents': temp_file_path, 'args': args}
+            func_args = {
+                'user_id': user_id,
+                'full_path': full_path,
+                'sub_path': sub_path,
+                'file_contents': temp_file_path,
+                'fn':fn,
+                'accept':accept,
+                'content_type':content_type,
+                'args': args,
+                'user_input': user_input,
+                'headers': headers,
+                'body': body
+            }
             
             # 过滤掉不在函数参数列表中的参数
             filtered_args = {k: v for k, v in func_args.items() if k in parameters}
@@ -96,7 +132,6 @@ async def dynamic_route(user_id: int = 0, path: str = "", file: UploadFile = Fil
                 # If Accept header is not provided, default to JSON
                 result = func(**filtered_args)
                 return JSONResponse(content=result)
-    except Exception as e:
         # traceback.print_exc()
         logger.error(f"Internal server error: {str(e)}", extra={"user_id": user_id, "path": sub_path, "function": fn})
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -105,5 +140,4 @@ async def dynamic_route(user_id: int = 0, path: str = "", file: UploadFile = Fil
         if temp_file_path and os.path.exists(temp_file_path):
             os.remove(temp_file_path)
             logger.info(f"Temporary file {temp_file_path} has been deleted.")
-
 
