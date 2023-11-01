@@ -81,7 +81,9 @@ async def dynamic_route(
     # 处理 body 数据
     from json import JSONDecodeError
     try:
-        if content_type == "application/json":
+        if request.method == 'GET':
+            body = None
+        elif content_type == "application/json":
             body = await request.json()
         elif content_type == "application/x-www-form-urlencoded" or content_type == "multipart/form-data":
             body = await request.form()

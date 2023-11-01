@@ -5,6 +5,7 @@ from jose.constants import ALGORITHMS
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
+import base64
 
 class Settings(BaseSettings):
     secret_key: str
@@ -23,10 +24,10 @@ def create_secret_key():
     )
     private_pem = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
-    return private_pem.decode()
+    return base64.b64encode(private_pem).decode()
 
 def create_default_env_file():
     with open(".env", "w") as f:
@@ -34,9 +35,12 @@ def create_default_env_file():
         f.write("ALGORITHM=HS256\n")
         f.write("ACCESS_TOKEN_EXPIRE_MINUTES=30\n")
 
+
 # 检查当前目录是否存在.env文件
 env_path = Path(".env")
 if not env_path.exists():
+    print("env_path not exists")
+
     create_default_env_file()
 
 # 加载环境变量
@@ -46,5 +50,5 @@ load_dotenv()
 settings = Settings()
 
 # 使用settings对象获取配置
-print(settings.secret_key)
-print(settings.algorithm)
+# print(settings.secret_key)
+# print(settings.algorithm)

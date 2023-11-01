@@ -101,6 +101,7 @@ venv/
 
 # VSCode directory
 .vscode
+.vscode/sftp.json
 
 # pycharm directory
 .idea/
