@@ -1,28 +1,21 @@
-from jose import ExpiredSignatureError, JWTError, jwt
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel, BaseSettings
-from typing import Optional
-from ..config import settings
+import os
+from fastapi import HTTPException
 
-class TokenData(BaseModel):
-    username: Optional[str] = None
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+def logout(user_id: int, verify_token=True, token_in_header: str = "", token_in_url: str = ""):
+    if not token_in_header:
+        token_in_header = token_in_url
+    if not token_in_header:
+        raise HTTPException(status_code=401, detail="No token provided.")
+
     try:
-        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except ExpiredSignatureError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired")
-    except JWTError:
-        raise credentials_exception
-    return token_data
+        auth_dir = os.path.join(str(user_id), ".auth")
+        os.makedirs(auth_dir, exist_ok=True)  # 确保目录存在，如果不存在则创建
+        blacklist_path = os.path.join(auth_dir, "token_blacklist.txt")
+
+        with open(blacklist_path, "a") as blacklist_file:
+            blacklist_file.write(token_in_header + "\n")
+
+        return {"message": "Logged out successfully."}
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=f"Error writing to blacklist file: {e}")

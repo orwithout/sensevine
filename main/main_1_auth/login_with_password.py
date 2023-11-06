@@ -2,7 +2,7 @@
 from fastapi import HTTPException
 import os
 import re
-from .login_gen_token import create_access_token
+from .login_gen_token import login_gen_token
 
 
 # fetch('http://your-api-url.com/0/some-protected-route', {
@@ -18,7 +18,7 @@ from .login_gen_token import create_access_token
 
 
 
-def login_with_password(user_id: int, args_in_header: str = "", args_in_url: str = ""):
+def login_with_password(user_id: int, verify_token=False, args_in_header: str="", args_in_url: str=""):
     # 如果 args_in_header 为空，尝试从 args_in_url 中获取
     if not args_in_header:
         args_in_header = args_in_url
@@ -47,6 +47,6 @@ def login_with_password(user_id: int, args_in_header: str = "", args_in_url: str
         raise HTTPException(status_code=400, detail="Invalid username or password")
 
     # 创建令牌
-    access_token = create_access_token(data={"sub": account,"mod":"password"})
+    access_token = login_gen_token(user_id=user_id, data={"sub": account,"mod":"password_hash"})
     return {"access_token": access_token, "token_type": "bearer"}
 
