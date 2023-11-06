@@ -1,6 +1,6 @@
 import jwt
 from datetime import datetime, timedelta
-from .config import settings  # 导入 settings 对象
+from .login_config import settings  # 导入 settings 对象
 
 def create_access_token(data: dict):
     to_encode = data.copy()

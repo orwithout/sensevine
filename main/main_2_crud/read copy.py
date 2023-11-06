@@ -1,6 +1,8 @@
 import os
+from ..main_1_auth.token_verify import token_verify
 
-def read(user_id=0, full_path="", args=""):
+@token_verify(user_id=0)
+def read(full_path=""):
     # List the items in the target directory
     try:
         items = os.listdir(full_path)

@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Query, HTTPException, Header, File, UploadFile,Depends
+from fastapi import FastAPI, Query, HTTPException, Header, File, UploadFile
 import os
 import importlib
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse, PlainTextResponse, Response
+from starlette.responses import JSONResponse, Response
+from .main_1_auth.verify_token import verify_token
+
 
 app = FastAPI()
 app.add_middleware(
@@ -44,8 +46,10 @@ async def dynamic_route(
     path: str = "",
     file: UploadFile = File(None),
     fn: str = Query("main_2_crud/read.py"),
-    args: str = Query(None),
-    user_input: str = Header(None),
+    args_in_url: str = Query(None),
+    token_in_url: str = Query(None),
+    args_in_header: str = Header(None),
+    token_in_header: str = Header(None),
     accept: str = Header(None),
     content_type: str = Header(None)
 ):
@@ -93,19 +97,41 @@ async def dynamic_route(
         raise HTTPException(status_code=400, detail="Invalid JSON")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+    
+    
+    print(fn)
 
     # 获取模块名、函数名（约定：文件中必须定义与文件名同名的函数）
-    module_name = str(fn).replace("/", ".").rstrip(".py")
-    function_name = os.path.basename(fn).rstrip(".py")
+    module_name = str(fn).replace("/", ".")[:-3]  # 去掉.py 前面已经判断必然以.py结尾
+    print(module_name)
+
+    # function_name = os.path.basename(module_name)
+    function_name = os.path.basename(fn)[:-3]
+    print(module_name)
+    print(function_name)
+    print("ffffffffff")
+
+
+
     try:
-        module = importlib.import_module(module_name)
+        module = importlib.import_module("main." + module_name)
+    except ImportError as e:
+        print(f"Error: Could not import module '{module_name}'. {e}")
+    else:
         if hasattr(module, function_name):
-            # 获取目标函数
+            # 获取目标函数及其参数
             func = getattr(module, function_name)
-            # 获取 func 函数的参数信息
             parameters = inspect.signature(func).parameters
-            
+            print(parameters)
+            print("ffffffffff")
+
+            # 如果函数中没有 verify_token 参数，或者 verify_token 参数不为 False，则验证 token
+            if 'verify_token' in parameters and parameters['verify_token'].default is not False:
+                print("ffffffffff666")
+
+                verify_token(user_id=user_id, token_in_header=token_in_header, token_in_url=token_in_url)
+
+
             # 准备要传递给函数的参数
             func_args = {
                 'user_id': user_id,
@@ -115,14 +141,20 @@ async def dynamic_route(
                 'fn':fn,
                 'accept':accept,
                 'content_type':content_type,
-                'args': args,
-                'user_input': user_input,
+                'args_in_url': args_in_url,
+                'token_in_url': token_in_url,
+                'args_in_header': args_in_header,
+                'token_in_header': token_in_header,
                 'headers': headers,
                 'body': body
             }
             
             # 过滤掉不在函数参数列表中的参数
             filtered_args = {k: v for k, v in func_args.items() if k in parameters}
+
+            print(filtered_args)
+
+            print("ffffffffff")
 
             if accept == "application/json":
                 result = func(**filtered_args)
@@ -134,9 +166,10 @@ async def dynamic_route(
                 # If Accept header is not provided, default to JSON
                 result = func(**filtered_args)
                 return JSONResponse(content=result)
-        # traceback.print_exc()
-        logger.error(f"Internal server error: {str(e)}", extra={"user_id": user_id, "path": sub_path, "function": fn})
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+        else:
+            # The function does not exist in the module, print an error message.
+            print(f"Error: The module '{module_name}' does not have a function named '{function_name}'")
 
     finally:
         if temp_file_path and os.path.exists(temp_file_path):

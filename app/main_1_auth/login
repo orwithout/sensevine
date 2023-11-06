@@ -1,9 +1,0 @@
-fetch('http://your-api-url.com/0/some-protected-route', {
-  method: 'GET',
-  headers: {
-    'user_info': 'username:password'
-  }
-})
-.then(response => response.json())
-.then(data => console.log(data));
-

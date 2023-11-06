@@ -1,0 +1,24 @@
+{
+  "user_id": 0,
+  "uuid": "xxx",
+  "email": "user@example.com",
+  "password_hash": "1234",
+  "profile": {
+    "nickname": "用户昵称",
+    "avatar_url": "头像图片的URL"
+  },
+  "auth_methods": {
+    "google": {
+      "id": "Google提供的用户ID",
+      "username": "user@gmail.com"
+    },
+    "github": {
+      "id": "GitHub提供的用户ID",
+      "username": "GitHub用户名"
+    },
+    "wechat": {
+      "id": "微信提供的用户ID",
+      "username": "微信昵称"
+    }
+  }
+}
