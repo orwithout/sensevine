@@ -3,7 +3,7 @@ import os
 import importlib
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse, Response
-from .main_1_auth.verify_token import verify_token
+from .m001_auth.verify_token import verify_token
 
 
 app = FastAPI()
@@ -45,7 +45,7 @@ async def dynamic_route(
     user_id: int = 0,
     path: str = "",
     file: UploadFile = File(None),
-    fn: str = Query("main_2_crud/read.py"),
+    fn: str = Query("m002_crud/read.py"),
     args_in_url: str = Query(None),
     token_in_url: str = Query(None),
     args_in_header: str = Header(None),
@@ -55,6 +55,7 @@ async def dynamic_route(
 ):
     base_dir = Path(str(user_id)).resolve()
     full_path = (base_dir / path).resolve()
+    print("ffffffffff")
 
     # 确保目标路径在基目录下
     if not full_path.is_relative_to(base_dir):

@@ -1,8 +1,6 @@
 import os
 
-def read(verify_token=True, full_path=""):  
-    # List the items in the target directory
-    print("readxxx")
+def read(verify_token=False, full_path=""):  
     try:
         items = os.listdir(full_path)
         return {"items": items}

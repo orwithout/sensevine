@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\Directory\shell\codeinz]
+@="codeinz"
+
+[HKEY_CLASSES_ROOT\Directory\shell\codeinz\command]
+@="\"C:\\git2\\sensevine\\main\\codeinz.cmd\" \"%1\"" 
